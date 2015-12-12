@@ -1,0 +1,143 @@
+COMS W4705 - Natural Language Processing  
+Homework 3  
+Sankalp Singayapally - ss4728
+
+*For convenience, I've included a script run.sh
+*Just do ./run.sh English to run the
+*scripts for English
+
+Part A
+
+KNN - English - 0.563  
+KNN - Spanish -  0.703 
+KNN - Catalan -  0.713 
+SVM - English - 0.621
+SVM - Spanish - 0.787 
+SVM - Catalan - 0.826
+
+Overall the SVM classifier performed better than the KNN classifier.  This is
+expected because it is known that the KNN is among the simplest classifiers
+avaiable to us. Moreover the SVM classifier internally does more sophisticated
+calculations including kernel mapping. I'm not too familiar with the exact
+working of the SVM here but given that the SVM takes into account the entire
+sample space but the KNN works only with the nearest neighbors, I am inclined to
+think that the SVM has more variability in data to train the model with. I've
+tried using the RBF kernel for the SVM but that didn't help improve the results
+(actually, this was done for Part B).
+
+I didn't remove the punctuation in Part A because I was obtaining the required
+results. I did do this in Part B though.
+
+Part B
+*In all cases precision and recall were equal
+*Note that I am reporting the improvements per feature only for English because
+I had spent more time focusing on this language since the required precision was
+harder to get here. Also, given my familiarity with the langugage, I think it is
+easier to rationalize. 
+
+1.
+
+A) - Using these features definitely improved the performance of the classifier.
+In particular, the POS tags of the head and the words within a window around it
+improved the performance considerably by about 3% (in English, this was from
+.623 to .65). I can rationalize that this was because by providing the SVM
+classifier with more information about the words within a window, we are able to
+train a better classifier. While the words may change because of slight
+variations, their tags remain the same for a particular sense and the tags
+change among senses.
+
+B) Stop words and punctuation don't add much information to the training data.
+In fact, I think they are a hindrance because they reduce the variability. It is
+unlikely that the presence of stop words such as "of", "and" reduces the
+variability and would induce some confusion into the classifier. A similar
+argument can be made for punctuation too. The performance of the classifier
+improved considerably here, bringing it close to the final values. I think, for
+Spanish, the improvement with this was about 3-4%. Stemming too was done here
+and the words in a window were being stored in their stemmed form and this would
+provide better consistency to the classifer.
+
+C) Calculating the top words for a particular sense and using the number of
+times they occur within a window around the head didn't help with the
+classification process. I think that given the other features that were already
+available, these ones didn't add much information. I would think that using just
+the top words without the window and the tags would definitely add some
+improvement but in my experience, these features are inferior compared to using
+the words within a window and their tags because the context is better provided
+by the latter.
+
+D) At this point I had sufficient performance on Spanish and Catalan languages
+so I implemented this only for English. While it is definitely helpful to check
+if synonyms of the head occur around the head within a window, it was by no
+means a game changer in this assignment. In fact, there was hardly any benefit
+using these features (improved from .663 to .665).
+
+E) Reducing the feature set reduced the performacne of the classifier. Pretty
+intuitive in my opinion because I think I've been using features that I felt are
+the best possible and this didn't really add much information. However, when I
+used this in conjunction with the KNN classifier, there was improvement but not
+a considerable amount. 
+
+2.
+
+Results using the best classifier - In all three languages, the SVM is the best
+classifier between the two:
+
+English - 0.665 (I know this doesn't touch the reference but I've tried all the
+suggested ones and even played with kernels. At some point this went to 0.672
+but I forgot the configuration that brought it so the final one I am submitting
+is 0.665)
+
+Spanish - 0.844
+
+Catalan - 0.844
+
+
+3.
+
+Final feature set includes the words within a window around the head, the head
+itself, the tags of the words and the head. All the punctuation is removed and
+the stop words are removed. For English, the synonyms are used (I've tried
+hyperny but the benefit with synonyms was marginally better). Also window size
+for English is 3 and for Spanish and Catalan is 2. For all of them the best
+classifier is the SVM. This is similar to the results that we've seen in Part A.
+I think with the addition of more exotic features here, the SVM tends to perform
+better because it can account for all the training data rather than just the
+ones within a neighborhood, which I believe trains a better classifier.
+
+For Spanish and Catalan I used a trigram tagger.
+
+Catalan stop words were sourced from here:
+https://pypi.python.org/pypi/stop-words
+Installed the package and got the stop words according to that.
+
+
+You can see the unused features as they have been commented out from the code.
+
+
+Conclusion
+
+WSD is a key problem in NLP and its complexity varies depending on the language.
+One important thing I noticed is that the size of the feature vectors is very
+important to the overall accruacy of the calssification task. For example, with
+English, I  used a larger window size and this is probably because of the larger
+dataset available. If the feature vector is large and the training data is small
+then there isn't much variability for a particular feature to effectively train
+a classifier.
+
+That was all ML related observations but coming to the key task at hand, it
+appears that a lot of the words that we were disambiguating were primarily verbs
+(there are others too).  Verbs tend to have a lot of different forms and they
+are heavily dependent on the words preceding and succeeding them in a sentence.
+This was illustrated by the fact that if I didn't use stop words for counting in
+a window the performance was good. However, if I removed stopwords for doing the
+tagging and using the words around the head, the performance fell because this
+would lead to reduced context.
+
+About the differences between the languages:
+
+Basic research shows that verbs, particularly have more forms in Spanish and
+Cataln than in English. This means the presence of a window of words is
+particularly significant in these languages. Moreover, these two languages don't
+seem to have as many words as English with different POS tags. This makes WSD
+easier with Spanish and Catalan as is evident by the difference in performance
+of the classifiers.
